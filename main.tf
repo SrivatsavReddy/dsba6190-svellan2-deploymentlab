@@ -151,3 +151,23 @@ resource "azurerm_firewall" "fire" {
     public_ip_address_id = azurerm_public_ip.pub.id
   }
 }
+
+resource "azurerm_app_service_plan" "functionapp" {
+ name = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}fp"
+ location = azurerm_resource_group.rg.location
+ resource_group_name = azurerm_resource_group.rg.name
+
+ sku {
+ tier = "Standard"
+ size = "S1"
+ }
+}
+
+resource "azurerm_function_app" "functionapp" {
+ name = "${var.class_name}${var.student_name}${var.environment}${random_integer.deployment_id_suffix.result}fap"
+ location = azurerm_resource_group.rg.location
+ resource_group_name = azurerm_resource_group.rg.name
+ app_service_plan_id = azurerm_app_service_plan.functionapp.id
+ storage_account_name = azurerm_storage_account.storage.name
+ storage_account_access_key = azurerm_storage_account.storage.primary_access_key
+}
